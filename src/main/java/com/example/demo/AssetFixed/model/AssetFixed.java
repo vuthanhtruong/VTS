@@ -3,6 +3,7 @@ package com.example.demo.AssetFixed.model;
 import com.example.demo.Asset.model.Asset;
 import com.example.demo.AssetFixedType.model.AssetFixedType;
 import com.example.demo.Employee.model.Employee;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,12 +27,14 @@ public class AssetFixed {
     @Column(name = "NAME", nullable = false, length = 255)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ASSET_ID", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ASSET_ID")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Asset asset;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ASSET_FIXED_TYPE_ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ASSET_FIXED_TYPE_ID")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private AssetFixedType assetFixedType;
 
     @Column(name = "UNIT", length = 50)
@@ -46,15 +49,17 @@ public class AssetFixed {
     @Column(name = "IS_ACTIVE", nullable = false)
     private Boolean isActive;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CREATE_BY", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "CREATE_BY")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Employee createBy;
 
     @Column(name = "CREATE_DATE")
     private LocalDateTime createDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MODIFIED_BY", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "MODIFIED_BY")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Employee modifiedBy;
 
     @Column(name = "MODIFIED_DATE")

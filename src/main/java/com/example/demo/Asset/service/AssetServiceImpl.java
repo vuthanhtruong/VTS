@@ -8,7 +8,12 @@ import java.util.List;
 
 @Service
 public class AssetServiceImpl implements AssetService {
-    private AssetDAO assetDAO;
+    private final AssetDAO assetDAO;
+
+    public AssetServiceImpl(AssetDAO assetDAO) {
+        this.assetDAO = assetDAO;
+    }
+
     @Override
     public Asset createAsset(Asset asset) {
         return assetDAO.createAsset(asset);

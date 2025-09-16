@@ -3,6 +3,7 @@ package com.example.demo.AssetFixedDecrease.model;
 import com.example.demo.AssetFixed.model.AssetFixed;
 import com.example.demo.AssetFixedDecreaseReason.model.AssetFixedDecreaseReason;
 import com.example.demo.Employee.model.Employee;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,10 +29,12 @@ public class AssetFixedDecrease {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ASSET_FIXED_TYPE_ID", nullable = true)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private AssetFixed assetFixedType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ASSET_FIXED_ID", nullable = true)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private AssetFixed assetFixed;
 
     @Column(name = "VOUCHER_NO", length = 50)
@@ -55,6 +58,7 @@ public class AssetFixedDecrease {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ASSET_FIXED_DECREASE_REASON_ID", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private AssetFixedDecreaseReason assetFixedDecreaseReason;
 
     @Column(name = "DEC_REV")
@@ -74,6 +78,7 @@ public class AssetFixedDecrease {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CREATE_BY", nullable = true)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Employee createBy;
 
     @Column(name = "CREATE_DATE")
@@ -81,6 +86,7 @@ public class AssetFixedDecrease {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MODIFIED_BY", nullable = true)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Employee modifiedBy;
 
     @Column(name = "MODIFIED_DATE")

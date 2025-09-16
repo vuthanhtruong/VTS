@@ -1,6 +1,7 @@
 package com.example.demo.AssetFixedType.model;
 
 import com.example.demo.Employee.model.Employee;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +27,8 @@ public class AssetFixedType {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ASSET_FIXED_TYPE_PARENT_ID", nullable = true)
+    @JoinColumn(name = "parent_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private AssetFixedType assetFixedTypeParent;
 
     @Column(name = "LAST_YEAR_USE_TIME")
@@ -51,14 +53,16 @@ public class AssetFixedType {
     private Boolean isActive;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CREATE_BY", nullable = true)
+    @JoinColumn(name = "create_by")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Employee createBy;
 
     @Column(name = "CREATE_DATE")
     private LocalDateTime createDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MODIFIED_BY", nullable = true)
+    @JoinColumn(name = "modified_by")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Employee modifiedBy;
 
     @Column(name = "MODIFIED_DATE")
