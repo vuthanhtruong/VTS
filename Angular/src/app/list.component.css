@@ -431,3 +431,143 @@
   background-color: #f3f4f6;
 }
 
+/* Reset cơ bản */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: #fff;
+  border-right: 1px solid #e5e7eb;
+  box-shadow: 2px 0 6px rgba(0,0,0,0.05);
+}
+
+.menu-item {
+  border-radius: 10px;
+  padding: 12px 14px;
+  transition: all 0.25s ease;
+}
+
+.menu-item:hover {
+  background-color: #f1f3f5;
+}
+
+.menu-item.active {
+  background-color: #b9000e;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Main content */
+.main-content {
+  background-color: #fafafa;
+  padding: 20px;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  background: none;
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 15px;
+}
+
+.page-title h1 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #343a40;
+}
+
+/* Buttons */
+.btn {
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.25s ease;
+}
+
+.btn-outline {
+  border: 1px solid #b9000e;
+  color: #b9000e;
+  background-color: #fff;
+}
+
+.btn-outline:hover {
+  background-color: #b9000e;
+  color: #fff;
+}
+
+.btn-primary {
+  background-color: #b9000e;
+  border: none;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #a0000c;
+}
+
+/* Table */
+.data-table {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.data-table th {
+  background-color: #f1f3f5;
+  font-size: 13px;
+  font-weight: 600;
+  color: #495057;
+  padding: 12px 14px;
+}
+
+.data-table td {
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #212529;
+}
+
+.data-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Filter input */
+.filter-row input.filter-input {
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+  padding: 6px 12px;
+  transition: border-color 0.2s;
+}
+
+.filter-row input.filter-input:focus {
+  border-color: #b9000e;
+  outline: none;
+}
+
+/* Pagination */
+.page-btn {
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  background: #fff;
+  transition: all 0.2s;
+}
+
+.page-btn:hover {
+  background: #f1f3f5;
+}
+
+.page-btn.active {
+  background: #b9000e;
+  color: #fff;
+  border-color: #b9000e;
+}

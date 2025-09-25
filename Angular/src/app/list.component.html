@@ -86,7 +86,6 @@
           <img src="https://c.animaapp.com/mfm15dyimNLwos/img/icon-interface-outline-plus.svg" alt="Add" />
           Thêm mới
         </button>
-        <button class="btn btn-outline" (click)="debugState()">Debug State</button>
       </div>
 
       <!-- Success Message -->
@@ -102,7 +101,6 @@
         <table>
           <thead>
           <tr>
-            <th><input type="checkbox" (change)="toggleSelectAll($event)"></th>
             <th>STT</th>
             <th>MÃ CT</th>
             <th>NGÀY CT</th>
@@ -113,7 +111,6 @@
           </thead>
           <tbody>
           <tr class="filter-row">
-            <td></td>
             <td><input type="text" placeholder="Năm" class="filter-input"></td>
             <td><input type="text" placeholder="Mã CT" class="filter-input"></td>
             <td><input type="text" placeholder="Ngày CT" class="filter-input"></td>
@@ -122,7 +119,6 @@
             <td><button class="clear-filter">Xóa bộ lọc</button></td>
           </tr>
           <tr *ngFor="let item of assetFixedDecreases; let i = index">
-            <td><input type="checkbox" [(ngModel)]="item.selected" (change)="updateSelectedItems()"></td>
             <td>{{ i + 1 + (currentPage * pageSize) }}</td>
             <td>{{ item.code || '-' }}</td>
             <td>{{ item.voucherDate || '-' }}</td>
@@ -177,12 +173,6 @@
           <button class="page-btn" (click)="goToPage(totalPages - 1)" [disabled]="currentPage === totalPages - 1">
             Cuối
           </button>
-          <div class="go-to-page">
-            <span>Đến trang</span>
-            <select [(ngModel)]="currentPage" (ngModelChange)="goToPage($event)">
-              <option *ngFor="let p of pageNumbers" [value]="p">{{ p + 1 }}</option>
-            </select>
-          </div>
         </div>
       </div>
     </div>
