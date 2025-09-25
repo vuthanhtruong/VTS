@@ -1,5 +1,6 @@
 package com.example.demo.Employee.dao;
 
+import com.example.demo.Employee.dto.EmployeeDTO;
 import com.example.demo.Employee.model.Employee;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,73 +13,75 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @Transactional
 public class EmployeeDAOImpl implements EmployeeDAO {
-    @Override
-    public List<String> validateEmployee(Employee employee) {
-        List<String> errors = new ArrayList<>();
-        if (employee.getEmployeeCode() == null || employee.getEmployeeCode().trim().isEmpty()) {
-            errors.add("Employee code is required.");
-        } else if (employee.getEmployeeCode().length() > 50) {
-            errors.add("Employee code must not exceed 50 characters.");
-        } else if (isEmployeeCodeDuplicate(employee.getEmployeeCode(), employee.getEmployeeId())) {
-            errors.add("Employee code is already in use.");
-        }
-        if (employee.getEmployeeName() == null || !isValidName(employee.getEmployeeName())) {
-            errors.add("Employee name is not valid. Only letters, spaces, and standard punctuation are allowed.");
-        }
-        if (employee.getEmployeeType() == null) {
-            errors.add("Employee type is required.");
-        }
-        if (employee.getRankCode() == null || employee.getRankCode().trim().isEmpty()) {
-            errors.add("Rank code is required.");
-        } else if (employee.getRankCode().length() > 50) {
-            errors.add("Rank code must not exceed 50 characters.");
-        }
-        if (employee.getEmail() != null && !isValidEmail(employee.getEmail())) {
-            errors.add("Invalid email format.");
-        }
-        if (employee.getPhone() != null && !isValidPhoneNumber(employee.getPhone())) {
-            errors.add("Invalid phone number format. Must be 10-15 digits, optionally starting with '+'.");
-        }
-        if (employee.getIsActive() == null) {
-            errors.add("Is active status is required.");
-        }
-        if (employee.getCreatedBy() != null && employee.getCreatedBy().getEmployeeId() != null) {
-            Employee createdBy = entityManager.find(Employee.class, employee.getCreatedBy().getEmployeeId());
-            if (createdBy == null) {
-                errors.add("Creator Employee not found with ID: " + employee.getCreatedBy().getEmployeeId());
-            }
-        }
-        if (employee.getModifiedBy() != null && employee.getModifiedBy().getEmployeeId() != null) {
-            Employee modifiedBy = entityManager.find(Employee.class, employee.getModifiedBy().getEmployeeId());
-            if (modifiedBy == null) {
-                errors.add("Modifier Employee not found with ID: " + employee.getModifiedBy().getEmployeeId());
-            }
-        }
-        return errors;
-    }
-
     private static final Logger logger = LoggerFactory.getLogger(EmployeeDAOImpl.class);
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
-    public Employee createEmployee(Employee employee) {
+    public List<String> validateEmployee(EmployeeDTO employeeDTO) {
+        List<String> errors = new ArrayList<>();
+        if (employeeDTO.getEmployeeCode() == null || employeeDTO.getEmployeeCode().trim().isEmpty()) {
+            errors.add("Employee code is required.");
+        } else if (employeeDTO.getEmployeeCode().length() > 50) {
+            errors.add("Employee code must not exceed 50 characters.");
+        } else if (isEmployeeCodeDuplicate(employeeDTO.getEmployeeCode(), employeeDTO.getEmployeeId())) {
+            errors.add("Employee code is already in use.");
+        }
+        if (employeeDTO.getEmployeeName() == null || !isValidName(employeeDTO.getEmployeeName())) {
+            errors.add("Employee name is not valid. Only letters, spaces, and standard punctuation are allowed.");
+        }
+        if (employeeDTO.getEmployeeType() == null) {
+            errors.add("Employee type is required.");
+        }
+        if (employeeDTO.getRankCode() == null || employeeDTO.getRankCode().trim().isEmpty()) {
+            errors.add("Rank code is required.");
+        } else if (employeeDTO.getRankCode().length() > 50) {
+            errors.add("Rank code must not exceed 50 characters.");
+        }
+        if (employeeDTO.getEmail() != null && !isValidEmail(employeeDTO.getEmail())) {
+            errors.add("Invalid email format.");
+        }
+        if (employeeDTO.getPhone() != null && !isValidPhoneNumber(employeeDTO.getPhone())) {
+            errors.add("Invalid phone number format. Must be 10-15 digits, optionally starting with '+'.");
+        }
+        if (employeeDTO.getIsActive() == null) {
+            errors.add("Is active status is required.");
+        }
+        if (employeeDTO.getCreatedById() != null) {
+            Employee createdBy = entityManager.find(Employee.class, employeeDTO.getCreatedById());
+            if (createdBy == null) {
+                errors.add("Creator Employee not found with ID: " + employeeDTO.getCreatedById());
+            }
+        }
+        if (employeeDTO.getModifiedById() != null) {
+            Employee modifiedBy = entityManager.find(Employee.class, employeeDTO.getModifiedById());
+            if (modifiedBy == null) {
+                errors.add("Modifier Employee not found with ID: " + employeeDTO.getModifiedById());
+            }
+        }
+        return errors;
+    }
+
+    @Override
+    public EmployeeDTO createEmployee(EmployeeDTO employeeDTO) {
         try {
-            if (employee.getCreatedBy() != null && employee.getCreatedBy().getEmployeeId() != null) {
-                Employee createdBy = entityManager.find(Employee.class, employee.getCreatedBy().getEmployeeId());
+            Employee employee = employeeDTO.toEntity();
+            if (employeeDTO.getCreatedById() != null) {
+                Employee createdBy = entityManager.find(Employee.class, employeeDTO.getCreatedById());
                 if (createdBy == null) {
-                    throw new EntityNotFoundException("Creator Employee not found with ID: " + employee.getCreatedBy().getEmployeeId());
+                    throw new EntityNotFoundException("Creator Employee not found with ID: " + employeeDTO.getCreatedById());
                 }
                 employee.setCreatedBy(createdBy);
                 employee.setModifiedBy(createdBy);
             }
             entityManager.persist(employee);
-            return employee;
+            return EmployeeDTO.fromEntity(employee);
         } catch (Exception e) {
             logger.error("Failed to create employee: {}", e.getMessage());
             throw e;
@@ -86,13 +89,13 @@ public class EmployeeDAOImpl implements EmployeeDAO {
     }
 
     @Override
-    public Employee getEmployeeById(Integer id) {
+    public EmployeeDTO getEmployeeById(Integer id) {
         try {
             Employee employee = entityManager.find(Employee.class, id);
             if (employee == null) {
                 throw new EntityNotFoundException("Employee not found with ID: " + id);
             }
-            return employee;
+            return EmployeeDTO.fromEntity(employee);
         } catch (Exception e) {
             logger.error("Failed to retrieve employee with ID {}: {}", id, e.getMessage());
             throw e;
@@ -100,10 +103,12 @@ public class EmployeeDAOImpl implements EmployeeDAO {
     }
 
     @Override
-    public List<Employee> getAllEmployees() {
+    public List<EmployeeDTO> getAllEmployees() {
         try {
             TypedQuery<Employee> query = entityManager.createQuery("SELECT e FROM Employee e", Employee.class);
-            return query.getResultList();
+            return query.getResultList().stream()
+                    .map(EmployeeDTO::fromEntity)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             logger.error("Failed to retrieve all employees: {}", e.getMessage());
             throw e;
@@ -111,31 +116,31 @@ public class EmployeeDAOImpl implements EmployeeDAO {
     }
 
     @Override
-    public Employee updateEmployee(Integer id, Employee employee) {
+    public EmployeeDTO updateEmployee(Integer id, EmployeeDTO employeeDTO) {
         try {
             Employee existingEmployee = entityManager.find(Employee.class, id);
             if (existingEmployee == null) {
                 throw new EntityNotFoundException("Employee not found with ID: " + id);
             }
-            existingEmployee.setEmployeeCode(employee.getEmployeeCode());
-            existingEmployee.setEmployeeName(employee.getEmployeeName());
-            existingEmployee.setDepartment(employee.getDepartment());
-            existingEmployee.setPosition(employee.getPosition());
-            existingEmployee.setGender(employee.getGender());
-            existingEmployee.setEmployeeType(employee.getEmployeeType());
-            existingEmployee.setRankCode(employee.getRankCode());
-            existingEmployee.setPhone(employee.getPhone());
-            existingEmployee.setEmail(employee.getEmail());
-            existingEmployee.setIsActive(employee.getIsActive());
-            if (employee.getModifiedBy() != null && employee.getModifiedBy().getEmployeeId() != null) {
-                Employee modifiedBy = entityManager.find(Employee.class, employee.getModifiedBy().getEmployeeId());
+            existingEmployee.setEmployeeCode(employeeDTO.getEmployeeCode());
+            existingEmployee.setEmployeeName(employeeDTO.getEmployeeName());
+            existingEmployee.setDepartment(employeeDTO.getDepartment());
+            existingEmployee.setPosition(employeeDTO.getPosition());
+            existingEmployee.setGender(employeeDTO.getGender());
+            existingEmployee.setEmployeeType(employeeDTO.getEmployeeType());
+            existingEmployee.setRankCode(employeeDTO.getRankCode());
+            existingEmployee.setPhone(employeeDTO.getPhone());
+            existingEmployee.setEmail(employeeDTO.getEmail());
+            existingEmployee.setIsActive(employeeDTO.getIsActive());
+            if (employeeDTO.getModifiedById() != null) {
+                Employee modifiedBy = entityManager.find(Employee.class, employeeDTO.getModifiedById());
                 if (modifiedBy == null) {
-                    throw new EntityNotFoundException("Modifier Employee not found with ID: " + employee.getModifiedBy().getEmployeeId());
+                    throw new EntityNotFoundException("Modifier Employee not found with ID: " + employeeDTO.getModifiedById());
                 }
                 existingEmployee.setModifiedBy(modifiedBy);
             }
             entityManager.merge(existingEmployee);
-            return existingEmployee;
+            return EmployeeDTO.fromEntity(existingEmployee);
         } catch (Exception e) {
             logger.error("Failed to update employee with ID {}: {}", id, e.getMessage());
             throw e;
@@ -155,6 +160,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
             throw e;
         }
     }
+
     private boolean isEmployeeCodeDuplicate(String employeeCode, Integer excludeId) {
         String jpql = "SELECT COUNT(e) FROM Employee e WHERE e.employeeCode = :code";
         if (excludeId != null) {

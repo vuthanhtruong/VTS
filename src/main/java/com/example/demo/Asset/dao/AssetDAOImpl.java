@@ -1,5 +1,6 @@
 package com.example.demo.Asset.dao;
 
+import com.example.demo.Asset.dto.AssetDTO;
 import com.example.demo.Asset.model.Asset;
 import com.example.demo.Employee.model.Employee;
 import jakarta.persistence.EntityManager;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @Transactional
@@ -24,81 +26,82 @@ public class AssetDAOImpl implements AssetDAO {
     private EntityManager entityManager;
 
     @Override
-    public List<String> validateAsset(Asset asset) {
+    public List<String> validateAsset(AssetDTO assetDTO) {
         List<String> errors = new ArrayList<>();
-        if (asset.getCode() == null || asset.getCode().trim().isEmpty()) {
+        if (assetDTO.getCode() == null || assetDTO.getCode().trim().isEmpty()) {
             errors.add("Asset code is required.");
-        } else if (asset.getCode().length() > 50) {
+        } else if (assetDTO.getCode().length() > 50) {
             errors.add("Asset code must not exceed 50 characters.");
-        } else if (isAssetCodeDuplicate(asset.getCode(), asset.getAssetId())) {
+        } else if (isAssetCodeDuplicate(assetDTO.getCode(), assetDTO.getAssetId())) {
             errors.add("Asset code is already in use.");
         }
-        if (asset.getName() == null || !isValidName(asset.getName())) {
+        if (assetDTO.getName() == null || !isValidName(assetDTO.getName())) {
             errors.add("Asset name is not valid. Only letters, spaces, and standard punctuation are allowed.");
         }
-        if (asset.getAssetPurchaseId() == null) {
+        if (assetDTO.getAssetPurchaseId() == null) {
             errors.add("Asset purchase ID is required.");
         }
-        if (asset.getType() == null) {
+        if (assetDTO.getType() == null) {
             errors.add("Asset type is required.");
         }
-        if (asset.getStatus() == null) {
+        if (assetDTO.getStatus() == null) {
             errors.add("Asset status is required.");
         }
-        if (asset.getIsUse() == null) {
+        if (assetDTO.getIsUse() == null) {
             errors.add("Is use status is required.");
         }
-        if (asset.getIsActive() == null) {
+        if (assetDTO.getIsActive() == null) {
             errors.add("Is active status is required.");
         }
-        if (asset.getBarcode() != null && asset.getBarcode().length() > 50) {
+        if (assetDTO.getBarcode() != null && assetDTO.getBarcode().length() > 50) {
             errors.add("Barcode must not exceed 50 characters.");
         }
-        if (asset.getDescription() != null && asset.getDescription().length() > 255) {
+        if (assetDTO.getDescription() != null && assetDTO.getDescription().length() > 255) {
             errors.add("Description must not exceed 255 characters.");
         }
-        if (asset.getCreateBy() != null && asset.getCreateBy().getEmployeeId() != null) {
-            Employee createBy = entityManager.find(Employee.class, asset.getCreateBy().getEmployeeId());
+        if (assetDTO.getCreateById() != null) {
+            Employee createBy = entityManager.find(Employee.class, assetDTO.getCreateById());
             if (createBy == null) {
-                errors.add("Creator Employee not found with ID: " + asset.getCreateBy().getEmployeeId());
+                errors.add("Creator Employee not found with ID: " + assetDTO.getCreateById());
             }
         }
-        if (asset.getModifiedBy() != null && asset.getModifiedBy().getEmployeeId() != null) {
-            Employee modifiedBy = entityManager.find(Employee.class, asset.getModifiedBy().getEmployeeId());
+        if (assetDTO.getModifiedById() != null) {
+            Employee modifiedBy = entityManager.find(Employee.class, assetDTO.getModifiedById());
             if (modifiedBy == null) {
-                errors.add("Modifier Employee not found with ID: " + asset.getModifiedBy().getEmployeeId());
+                errors.add("Modifier Employee not found with ID: " + assetDTO.getModifiedById());
             }
         }
         return errors;
     }
 
     @Override
-    public Asset createAsset(Asset asset) {
+    public AssetDTO createAsset(AssetDTO assetDTO) {
         try {
-            if (asset.getCreateBy() != null && asset.getCreateBy().getEmployeeId() != null) {
-                Employee createBy = entityManager.find(Employee.class, asset.getCreateBy().getEmployeeId());
+            Asset asset = assetDTO.toEntity();
+            if (assetDTO.getCreateById() != null) {
+                Employee createBy = entityManager.find(Employee.class, assetDTO.getCreateById());
                 if (createBy == null) {
-                    throw new EntityNotFoundException("Creator Employee not found with ID: " + asset.getCreateBy().getEmployeeId());
+                    throw new EntityNotFoundException("Creator Employee not found with ID: " + assetDTO.getCreateById());
                 }
                 asset.setCreateBy(createBy);
                 asset.setModifiedBy(createBy);
             }
             entityManager.persist(asset);
-            return asset;
+            return AssetDTO.fromEntity(asset);
         } catch (Exception e) {
-            logger.error("Failed to create asset: {}", e.getMessage());
+            logger.error("Failed to create asset with code {}: {}", assetDTO.getCode(), e.getMessage());
             throw e;
         }
     }
 
     @Override
-    public Asset getAssetById(Integer id) {
+    public AssetDTO getAssetById(Integer id) {
         try {
             Asset asset = entityManager.find(Asset.class, id);
             if (asset == null) {
                 throw new EntityNotFoundException("Asset not found with ID: " + id);
             }
-            return asset;
+            return AssetDTO.fromEntity(asset);
         } catch (Exception e) {
             logger.error("Failed to retrieve asset with ID {}: {}", id, e.getMessage());
             throw e;
@@ -106,10 +109,12 @@ public class AssetDAOImpl implements AssetDAO {
     }
 
     @Override
-    public List<Asset> getAllAssets() {
+    public List<AssetDTO> getAllAssets() {
         try {
             TypedQuery<Asset> query = entityManager.createQuery("SELECT a FROM Asset a", Asset.class);
-            return query.getResultList();
+            return query.getResultList().stream()
+                    .map(AssetDTO::fromEntity)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             logger.error("Failed to retrieve all assets: {}", e.getMessage());
             throw e;
@@ -117,30 +122,30 @@ public class AssetDAOImpl implements AssetDAO {
     }
 
     @Override
-    public Asset updateAsset(Integer id, Asset asset) {
+    public AssetDTO updateAsset(Integer id, AssetDTO assetDTO) {
         try {
             Asset existingAsset = entityManager.find(Asset.class, id);
             if (existingAsset == null) {
                 throw new EntityNotFoundException("Asset not found with ID: " + id);
             }
-            existingAsset.setCode(asset.getCode());
-            existingAsset.setName(asset.getName());
-            existingAsset.setAssetPurchaseId(asset.getAssetPurchaseId());
-            existingAsset.setBarcode(asset.getBarcode());
-            existingAsset.setType(asset.getType());
-            existingAsset.setStatus(asset.getStatus());
-            existingAsset.setIsUse(asset.getIsUse());
-            existingAsset.setIsActive(asset.getIsActive());
-            existingAsset.setDescription(asset.getDescription());
-            if (asset.getModifiedBy() != null && asset.getModifiedBy().getEmployeeId() != null) {
-                Employee modifiedBy = entityManager.find(Employee.class, asset.getModifiedBy().getEmployeeId());
+            existingAsset.setCode(assetDTO.getCode());
+            existingAsset.setName(assetDTO.getName());
+            existingAsset.setAssetPurchaseId(assetDTO.getAssetPurchaseId());
+            existingAsset.setBarcode(assetDTO.getBarcode());
+            existingAsset.setType(assetDTO.getType());
+            existingAsset.setStatus(assetDTO.getStatus());
+            existingAsset.setIsUse(assetDTO.getIsUse());
+            existingAsset.setIsActive(assetDTO.getIsActive());
+            existingAsset.setDescription(assetDTO.getDescription());
+            if (assetDTO.getModifiedById() != null) {
+                Employee modifiedBy = entityManager.find(Employee.class, assetDTO.getModifiedById());
                 if (modifiedBy == null) {
-                    throw new EntityNotFoundException("Modifier Employee not found with ID: " + asset.getModifiedBy().getEmployeeId());
+                    throw new EntityNotFoundException("Modifier Employee not found with ID: " + assetDTO.getModifiedById());
                 }
                 existingAsset.setModifiedBy(modifiedBy);
             }
             entityManager.merge(existingAsset);
-            return existingAsset;
+            return AssetDTO.fromEntity(existingAsset);
         } catch (Exception e) {
             logger.error("Failed to update asset with ID {}: {}", id, e.getMessage());
             throw e;

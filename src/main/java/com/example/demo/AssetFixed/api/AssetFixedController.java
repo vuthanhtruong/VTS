@@ -1,6 +1,6 @@
 package com.example.demo.AssetFixed.api;
 
-import com.example.demo.AssetFixed.model.AssetFixed;
+import com.example.demo.AssetFixed.dto.AssetFixedDTO;
 import com.example.demo.AssetFixed.service.AssetFixedSerivce;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/asset-fixed")
+@CrossOrigin(origins = "http://localhost:4200")
 @Validated
 public class AssetFixedController {
 
@@ -22,13 +23,13 @@ public class AssetFixedController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createAssetFixed(@Valid @RequestBody AssetFixed assetFixed) {
-        List<String> errors = assetFixedService.validateAssetFixed(assetFixed);
+    public ResponseEntity<?> createAssetFixed(@Valid @RequestBody AssetFixedDTO assetFixedDTO) {
+        List<String> errors = assetFixedService.validateAssetFixed(assetFixedDTO);
         if (!errors.isEmpty()) {
             return new ResponseEntity<>("Validation failed: " + String.join(", ", errors), HttpStatus.BAD_REQUEST);
         }
         try {
-            AssetFixed createdAssetFixed = assetFixedService.createAssetFixed(assetFixed);
+            AssetFixedDTO createdAssetFixed = assetFixedService.createAssetFixed(assetFixedDTO);
             return new ResponseEntity<>(createdAssetFixed, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to create asset fixed: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -38,7 +39,7 @@ public class AssetFixedController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getAssetFixedById(@PathVariable Integer id) {
         try {
-            AssetFixed assetFixed = assetFixedService.getAssetFixedById(id);
+            AssetFixedDTO assetFixed = assetFixedService.getAssetFixedById(id);
             return new ResponseEntity<>(assetFixed, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to retrieve asset fixed: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -48,7 +49,7 @@ public class AssetFixedController {
     @GetMapping
     public ResponseEntity<?> getAllAssetFixed() {
         try {
-            List<AssetFixed> assetFixeds = assetFixedService.getAllAssetFixed();
+            List<AssetFixedDTO> assetFixeds = assetFixedService.getAllAssetFixed();
             return new ResponseEntity<>(assetFixeds, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to retrieve asset fixeds: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -56,13 +57,13 @@ public class AssetFixedController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAssetFixed(@PathVariable Integer id, @Valid @RequestBody AssetFixed assetFixed) {
-        List<String> errors = assetFixedService.validateAssetFixed(assetFixed);
+    public ResponseEntity<?> updateAssetFixed(@PathVariable Integer id, @Valid @RequestBody AssetFixedDTO assetFixedDTO) {
+        List<String> errors = assetFixedService.validateAssetFixed(assetFixedDTO);
         if (!errors.isEmpty()) {
             return new ResponseEntity<>("Validation failed: " + String.join(", ", errors), HttpStatus.BAD_REQUEST);
         }
         try {
-            AssetFixed updatedAssetFixed = assetFixedService.updateAssetFixed(id, assetFixed);
+            AssetFixedDTO updatedAssetFixed = assetFixedService.updateAssetFixed(id, assetFixedDTO);
             return new ResponseEntity<>(updatedAssetFixed, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to update asset fixed: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

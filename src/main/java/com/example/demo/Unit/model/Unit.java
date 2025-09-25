@@ -18,10 +18,6 @@ public class Unit {
     @Column(name = "UNIT_ID", nullable = false)
     private Integer unitId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ORGANIZATION_ID", nullable = false)
-    private Organization organization;
-
     @Column(name = "TYPE", nullable = false, length = 50)
     private String type;
 
@@ -107,7 +103,7 @@ public class Unit {
 
     public Unit() {}
 
-    public Unit(Integer unitId, Organization organization, String type, String code, String name, String level,
+    public Unit(Integer unitId,String type, String code, String name, String level,
                 String address, String province, String commune, Integer unitBudgetParentId, Integer unitParentId,
                 String localCode, String taxCode, String phoneNumber, String fax, String bankAccount,
                 String email, String website, String treasuryAccount, String treasuryCode, String treasuryName,
@@ -115,7 +111,6 @@ public class Unit {
                 Employee createBy, LocalDateTime createDate,
                 Employee modifiedBy, LocalDateTime modifiedDate, String description) {
         this.unitId = unitId;
-        this.organization = organization;
         this.type = type;
         this.code = code;
         this.name = name;

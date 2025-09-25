@@ -1,5 +1,6 @@
 package com.example.demo.AssetFixedType.dao;
 
+import com.example.demo.AssetFixedType.dto.AssetFixedTypeDTO;
 import com.example.demo.AssetFixedType.model.AssetFixedType;
 import com.example.demo.Employee.model.Employee;
 import jakarta.persistence.EntityManager;
@@ -13,102 +14,103 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @Transactional
 public class AssetFixedTypeDAOImpl implements AssetFixedTypeDAO {
-
     private static final Logger logger = LoggerFactory.getLogger(AssetFixedTypeDAOImpl.class);
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
-    public List<String> validateAssetFixedType(AssetFixedType assetFixedType) {
+    public List<String> validateAssetFixedType(AssetFixedTypeDTO assetFixedTypeDTO) {
         List<String> errors = new ArrayList<>();
-        if (assetFixedType.getCode() == null || assetFixedType.getCode().trim().isEmpty()) {
+        if (assetFixedTypeDTO.getCode() == null || assetFixedTypeDTO.getCode().trim().isEmpty()) {
             errors.add("Asset fixed type code is required.");
-        } else if (assetFixedType.getCode().length() > 50) {
+        } else if (assetFixedTypeDTO.getCode().length() > 50) {
             errors.add("Asset fixed type code must not exceed 50 characters.");
-        } else if (isAssetFixedTypeCodeDuplicate(assetFixedType.getCode(), assetFixedType.getAssetFixedTypeId())) {
+        } else if (isAssetFixedTypeCodeDuplicate(assetFixedTypeDTO.getCode(), assetFixedTypeDTO.getAssetFixedTypeId())) {
             errors.add("Asset fixed type code is already in use.");
         }
-        if (assetFixedType.getName() == null || !isValidName(assetFixedType.getName())) {
+        if (assetFixedTypeDTO.getName() == null || !isValidName(assetFixedTypeDTO.getName())) {
             errors.add("Asset fixed type name is not valid. Only letters, spaces, and standard punctuation are allowed.");
         }
-        if (assetFixedType.getOldDepreciationRate() == null) {
+        if (assetFixedTypeDTO.getOldDepreciationRate() == null) {
             errors.add("Old depreciation rate is required.");
         }
-        if (assetFixedType.getNewDepreciationRate() == null) {
+        if (assetFixedTypeDTO.getNewDepreciationRate() == null) {
             errors.add("New depreciation rate is required.");
         }
-        if (assetFixedType.getYearApplication() == null) {
+        if (assetFixedTypeDTO.getYearApplication() == null) {
             errors.add("Year application is required.");
         }
-        if (assetFixedType.getIsUse() == null) {
+        if (assetFixedTypeDTO.getIsUse() == null) {
             errors.add("Is use status is required.");
         }
-        if (assetFixedType.getIsActive() == null) {
+        if (assetFixedTypeDTO.getIsActive() == null) {
             errors.add("Is active status is required.");
         }
-        if (assetFixedType.getAssetFixedTypeParent() != null && assetFixedType.getAssetFixedTypeParent().getAssetFixedTypeId() != null) {
-            AssetFixedType parent = entityManager.find(AssetFixedType.class, assetFixedType.getAssetFixedTypeParent().getAssetFixedTypeId());
+        if (assetFixedTypeDTO.getParentId() != null) {
+            AssetFixedType parent = entityManager.find(AssetFixedType.class, assetFixedTypeDTO.getParentId());
             if (parent == null) {
-                errors.add("Parent asset fixed type not found with ID: " + assetFixedType.getAssetFixedTypeParent().getAssetFixedTypeId());
+                errors.add("Parent asset fixed type not found with ID: " + assetFixedTypeDTO.getParentId());
             }
         }
-        if (assetFixedType.getCreateBy() != null && assetFixedType.getCreateBy().getEmployeeId() != null) {
-            Employee createBy = entityManager.find(Employee.class, assetFixedType.getCreateBy().getEmployeeId());
+        if (assetFixedTypeDTO.getCreateById() != null) {
+            Employee createBy = entityManager.find(Employee.class, assetFixedTypeDTO.getCreateById());
             if (createBy == null) {
-                errors.add("Creator Employee not found with ID: " + assetFixedType.getCreateBy().getEmployeeId());
+                errors.add("Creator Employee not found with ID: " + assetFixedTypeDTO.getCreateById());
             }
         }
-        if (assetFixedType.getModifiedBy() != null && assetFixedType.getModifiedBy().getEmployeeId() != null) {
-            Employee modifiedBy = entityManager.find(Employee.class, assetFixedType.getModifiedBy().getEmployeeId());
+        if (assetFixedTypeDTO.getModifiedById() != null) {
+            Employee modifiedBy = entityManager.find(Employee.class, assetFixedTypeDTO.getModifiedById());
             if (modifiedBy == null) {
-                errors.add("Modifier Employee not found with ID: " + assetFixedType.getModifiedBy().getEmployeeId());
+                errors.add("Modifier Employee not found with ID: " + assetFixedTypeDTO.getModifiedById());
             }
         }
-        if (assetFixedType.getDescription() != null && assetFixedType.getDescription().length() > 255) {
+        if (assetFixedTypeDTO.getDescription() != null && assetFixedTypeDTO.getDescription().length() > 255) {
             errors.add("Description must not exceed 255 characters.");
         }
         return errors;
     }
 
     @Override
-    public AssetFixedType createAssetFixedType(AssetFixedType assetFixedType) {
+    public AssetFixedTypeDTO createAssetFixedType(AssetFixedTypeDTO assetFixedTypeDTO) {
         try {
-            if (assetFixedType.getAssetFixedTypeParent() != null && assetFixedType.getAssetFixedTypeParent().getAssetFixedTypeId() != null) {
-                AssetFixedType parent = entityManager.find(AssetFixedType.class, assetFixedType.getAssetFixedTypeParent().getAssetFixedTypeId());
+            AssetFixedType assetFixedType = assetFixedTypeDTO.toEntity();
+            if (assetFixedTypeDTO.getParentId() != null) {
+                AssetFixedType parent = entityManager.find(AssetFixedType.class, assetFixedTypeDTO.getParentId());
                 if (parent == null) {
-                    throw new EntityNotFoundException("Parent asset fixed type not found with ID: " + assetFixedType.getAssetFixedTypeParent().getAssetFixedTypeId());
+                    throw new EntityNotFoundException("Parent asset fixed type not found with ID: " + assetFixedTypeDTO.getParentId());
                 }
                 assetFixedType.setAssetFixedTypeParent(parent);
             }
-            if (assetFixedType.getCreateBy() != null && assetFixedType.getCreateBy().getEmployeeId() != null) {
-                Employee createBy = entityManager.find(Employee.class, assetFixedType.getCreateBy().getEmployeeId());
+            if (assetFixedTypeDTO.getCreateById() != null) {
+                Employee createBy = entityManager.find(Employee.class, assetFixedTypeDTO.getCreateById());
                 if (createBy == null) {
-                    throw new EntityNotFoundException("Creator Employee not found with ID: " + assetFixedType.getCreateBy().getEmployeeId());
+                    throw new EntityNotFoundException("Creator Employee not found with ID: " + assetFixedTypeDTO.getCreateById());
                 }
                 assetFixedType.setCreateBy(createBy);
                 assetFixedType.setModifiedBy(createBy);
             }
             entityManager.persist(assetFixedType);
-            return assetFixedType;
+            return AssetFixedTypeDTO.fromEntity(assetFixedType);
         } catch (Exception e) {
-            logger.error("Failed to create asset fixed type with code {}: {}", assetFixedType.getCode(), e.getMessage());
+            logger.error("Failed to create asset fixed type with code {}: {}", assetFixedTypeDTO.getCode(), e.getMessage());
             throw e;
         }
     }
 
     @Override
-    public AssetFixedType getAssetFixedTypeById(Integer id) {
+    public AssetFixedTypeDTO getAssetFixedTypeById(Integer id) {
         try {
             AssetFixedType assetFixedType = entityManager.find(AssetFixedType.class, id);
             if (assetFixedType == null) {
                 throw new EntityNotFoundException("Asset fixed type not found with ID: " + id);
             }
-            return assetFixedType;
+            return AssetFixedTypeDTO.fromEntity(assetFixedType);
         } catch (Exception e) {
             logger.error("Failed to retrieve asset fixed type with ID {}: {}", id, e.getMessage());
             throw e;
@@ -116,10 +118,12 @@ public class AssetFixedTypeDAOImpl implements AssetFixedTypeDAO {
     }
 
     @Override
-    public List<AssetFixedType> getAllAssetFixedTypes() {
+    public List<AssetFixedTypeDTO> getAllAssetFixedTypes() {
         try {
             TypedQuery<AssetFixedType> query = entityManager.createQuery("SELECT aft FROM AssetFixedType aft", AssetFixedType.class);
-            return query.getResultList();
+            return query.getResultList().stream()
+                    .map(AssetFixedTypeDTO::fromEntity)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             logger.error("Failed to retrieve all asset fixed types: {}", e.getMessage());
             throw e;
@@ -127,40 +131,40 @@ public class AssetFixedTypeDAOImpl implements AssetFixedTypeDAO {
     }
 
     @Override
-    public AssetFixedType updateAssetFixedType(Integer id, AssetFixedType assetFixedType) {
+    public AssetFixedTypeDTO updateAssetFixedType(Integer id, AssetFixedTypeDTO assetFixedTypeDTO) {
         try {
             AssetFixedType existingAssetFixedType = entityManager.find(AssetFixedType.class, id);
             if (existingAssetFixedType == null) {
                 throw new EntityNotFoundException("Asset fixed type not found with ID: " + id);
             }
-            existingAssetFixedType.setCode(assetFixedType.getCode());
-            existingAssetFixedType.setName(assetFixedType.getName());
-            existingAssetFixedType.setLastYearUseTime(assetFixedType.getLastYearUseTime());
-            existingAssetFixedType.setNewYearUseTime(assetFixedType.getNewYearUseTime());
-            existingAssetFixedType.setOldDepreciationRate(assetFixedType.getOldDepreciationRate());
-            existingAssetFixedType.setNewDepreciationRate(assetFixedType.getNewDepreciationRate());
-            existingAssetFixedType.setYearApplication(assetFixedType.getYearApplication());
-            existingAssetFixedType.setIsUse(assetFixedType.getIsUse());
-            existingAssetFixedType.setIsActive(assetFixedType.getIsActive());
-            existingAssetFixedType.setDescription(assetFixedType.getDescription());
-            if (assetFixedType.getAssetFixedTypeParent() != null && assetFixedType.getAssetFixedTypeParent().getAssetFixedTypeId() != null) {
-                AssetFixedType parent = entityManager.find(AssetFixedType.class, assetFixedType.getAssetFixedTypeParent().getAssetFixedTypeId());
+            existingAssetFixedType.setCode(assetFixedTypeDTO.getCode());
+            existingAssetFixedType.setName(assetFixedTypeDTO.getName());
+            existingAssetFixedType.setLastYearUseTime(assetFixedTypeDTO.getLastYearUseTime());
+            existingAssetFixedType.setNewYearUseTime(assetFixedTypeDTO.getNewYearUseTime());
+            existingAssetFixedType.setOldDepreciationRate(assetFixedTypeDTO.getOldDepreciationRate());
+            existingAssetFixedType.setNewDepreciationRate(assetFixedTypeDTO.getNewDepreciationRate());
+            existingAssetFixedType.setYearApplication(assetFixedTypeDTO.getYearApplication());
+            existingAssetFixedType.setIsUse(assetFixedTypeDTO.getIsUse());
+            existingAssetFixedType.setIsActive(assetFixedTypeDTO.getIsActive());
+            existingAssetFixedType.setDescription(assetFixedTypeDTO.getDescription());
+            if (assetFixedTypeDTO.getParentId() != null) {
+                AssetFixedType parent = entityManager.find(AssetFixedType.class, assetFixedTypeDTO.getParentId());
                 if (parent == null) {
-                    throw new EntityNotFoundException("Parent asset fixed type not found with ID: " + assetFixedType.getAssetFixedTypeParent().getAssetFixedTypeId());
+                    throw new EntityNotFoundException("Parent asset fixed type not found with ID: " + assetFixedTypeDTO.getParentId());
                 }
                 existingAssetFixedType.setAssetFixedTypeParent(parent);
             } else {
                 existingAssetFixedType.setAssetFixedTypeParent(null);
             }
-            if (assetFixedType.getModifiedBy() != null && assetFixedType.getModifiedBy().getEmployeeId() != null) {
-                Employee modifiedBy = entityManager.find(Employee.class, assetFixedType.getModifiedBy().getEmployeeId());
+            if (assetFixedTypeDTO.getModifiedById() != null) {
+                Employee modifiedBy = entityManager.find(Employee.class, assetFixedTypeDTO.getModifiedById());
                 if (modifiedBy == null) {
-                    throw new EntityNotFoundException("Modifier Employee not found with ID: " + assetFixedType.getModifiedBy().getEmployeeId());
+                    throw new EntityNotFoundException("Modifier Employee not found with ID: " + assetFixedTypeDTO.getModifiedById());
                 }
                 existingAssetFixedType.setModifiedBy(modifiedBy);
             }
             entityManager.merge(existingAssetFixedType);
-            return existingAssetFixedType;
+            return AssetFixedTypeDTO.fromEntity(existingAssetFixedType);
         } catch (Exception e) {
             logger.error("Failed to update asset fixed type with ID {}: {}", id, e.getMessage());
             throw e;

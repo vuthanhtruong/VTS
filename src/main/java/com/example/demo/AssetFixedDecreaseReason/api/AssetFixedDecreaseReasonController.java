@@ -1,6 +1,6 @@
 package com.example.demo.AssetFixedDecreaseReason.api;
 
-import com.example.demo.AssetFixedDecreaseReason.model.AssetFixedDecreaseReason;
+import com.example.demo.AssetFixedDecreaseReason.dto.AssetFixedDecreaseReasonDTO;
 import com.example.demo.AssetFixedDecreaseReason.service.AssetFixedDecreaseReasonService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/asset-fixed-decrease-reasons")
+@CrossOrigin(origins = "http://localhost:4200")
 @Validated
 public class AssetFixedDecreaseReasonController {
 
@@ -22,13 +23,13 @@ public class AssetFixedDecreaseReasonController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createAssetFixedDecreaseReason(@Valid @RequestBody AssetFixedDecreaseReason assetFixedDecreaseReason) {
-        List<String> errors = assetFixedDecreaseReasonService.validateAssetFixedDecreaseReason(assetFixedDecreaseReason);
+    public ResponseEntity<?> createAssetFixedDecreaseReason(@Valid @RequestBody AssetFixedDecreaseReasonDTO assetFixedDecreaseReasonDTO) {
+        List<String> errors = assetFixedDecreaseReasonService.validateAssetFixedDecreaseReason(assetFixedDecreaseReasonDTO);
         if (!errors.isEmpty()) {
             return new ResponseEntity<>("Validation failed: " + String.join(", ", errors), HttpStatus.BAD_REQUEST);
         }
         try {
-            AssetFixedDecreaseReason createdAssetFixedDecreaseReason = assetFixedDecreaseReasonService.createAssetFixedDecreaseReason(assetFixedDecreaseReason);
+            AssetFixedDecreaseReasonDTO createdAssetFixedDecreaseReason = assetFixedDecreaseReasonService.createAssetFixedDecreaseReason(assetFixedDecreaseReasonDTO);
             return new ResponseEntity<>(createdAssetFixedDecreaseReason, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to create asset fixed decrease reason: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -38,7 +39,7 @@ public class AssetFixedDecreaseReasonController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getAssetFixedDecreaseReasonById(@PathVariable Integer id) {
         try {
-            AssetFixedDecreaseReason assetFixedDecreaseReason = assetFixedDecreaseReasonService.getAssetFixedDecreaseReasonById(id);
+            AssetFixedDecreaseReasonDTO assetFixedDecreaseReason = assetFixedDecreaseReasonService.getAssetFixedDecreaseReasonById(id);
             return new ResponseEntity<>(assetFixedDecreaseReason, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to retrieve asset fixed decrease reason: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -48,7 +49,7 @@ public class AssetFixedDecreaseReasonController {
     @GetMapping
     public ResponseEntity<?> getAllAssetFixedDecreaseReasons() {
         try {
-            List<AssetFixedDecreaseReason> assetFixedDecreaseReasons = assetFixedDecreaseReasonService.getAllAssetFixedDecreaseReasons();
+            List<AssetFixedDecreaseReasonDTO> assetFixedDecreaseReasons = assetFixedDecreaseReasonService.getAllAssetFixedDecreaseReasons();
             return new ResponseEntity<>(assetFixedDecreaseReasons, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to retrieve asset fixed decrease reasons: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -56,13 +57,13 @@ public class AssetFixedDecreaseReasonController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAssetFixedDecreaseReason(@PathVariable Integer id, @Valid @RequestBody AssetFixedDecreaseReason assetFixedDecreaseReason) {
-        List<String> errors = assetFixedDecreaseReasonService.validateAssetFixedDecreaseReason(assetFixedDecreaseReason);
+    public ResponseEntity<?> updateAssetFixedDecreaseReason(@PathVariable Integer id, @Valid @RequestBody AssetFixedDecreaseReasonDTO assetFixedDecreaseReasonDTO) {
+        List<String> errors = assetFixedDecreaseReasonService.validateAssetFixedDecreaseReason(assetFixedDecreaseReasonDTO);
         if (!errors.isEmpty()) {
             return new ResponseEntity<>("Validation failed: " + String.join(", ", errors), HttpStatus.BAD_REQUEST);
         }
         try {
-            AssetFixedDecreaseReason updatedAssetFixedDecreaseReason = assetFixedDecreaseReasonService.updateAssetFixedDecreaseReason(id, assetFixedDecreaseReason);
+            AssetFixedDecreaseReasonDTO updatedAssetFixedDecreaseReason = assetFixedDecreaseReasonService.updateAssetFixedDecreaseReason(id, assetFixedDecreaseReasonDTO);
             return new ResponseEntity<>(updatedAssetFixedDecreaseReason, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to update asset fixed decrease reason: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

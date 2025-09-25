@@ -1,14 +1,13 @@
 package com.example.demo.Asset.service;
 
-import com.example.demo.Asset.model.Asset;
-
+import com.example.demo.Asset.dto.AssetDTO;
 import java.util.List;
 
 public interface AssetService {
-    Asset createAsset(Asset asset);
-    Asset getAssetById(Integer id);
-    List<Asset> getAllAssets();
-    Asset updateAsset(Integer id, Asset asset);
+    AssetDTO createAsset(AssetDTO assetDTO);
+    AssetDTO getAssetById(Integer id);
+    List<AssetDTO> getAllAssets();
+    AssetDTO updateAsset(Integer id, AssetDTO assetDTO);
     void deleteAsset(Integer id);
-    List<String> validateAsset(Asset asset);
+    List<String> validateAsset(AssetDTO assetDTO);
 }

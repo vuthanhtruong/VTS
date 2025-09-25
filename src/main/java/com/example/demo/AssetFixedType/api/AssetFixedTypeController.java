@@ -1,6 +1,6 @@
 package com.example.demo.AssetFixedType.api;
 
-import com.example.demo.AssetFixedType.model.AssetFixedType;
+import com.example.demo.AssetFixedType.dto.AssetFixedTypeDTO;
 import com.example.demo.AssetFixedType.service.AssetFixedTypeService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/asset-fixed-types")
+@CrossOrigin(origins = "http://localhost:4200")
 @Validated
 public class AssetFixedTypeController {
 
@@ -22,13 +23,13 @@ public class AssetFixedTypeController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createAssetFixedType(@Valid @RequestBody AssetFixedType assetFixedType) {
-        List<String> errors = assetFixedTypeService.validateAssetFixedType(assetFixedType);
+    public ResponseEntity<?> createAssetFixedType(@Valid @RequestBody AssetFixedTypeDTO assetFixedTypeDTO) {
+        List<String> errors = assetFixedTypeService.validateAssetFixedType(assetFixedTypeDTO);
         if (!errors.isEmpty()) {
             return new ResponseEntity<>("Validation failed: " + String.join(", ", errors), HttpStatus.BAD_REQUEST);
         }
         try {
-            AssetFixedType createdAssetFixedType = assetFixedTypeService.createAssetFixedType(assetFixedType);
+            AssetFixedTypeDTO createdAssetFixedType = assetFixedTypeService.createAssetFixedType(assetFixedTypeDTO);
             return new ResponseEntity<>(createdAssetFixedType, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to create asset fixed type: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -38,7 +39,7 @@ public class AssetFixedTypeController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getAssetFixedTypeById(@PathVariable Integer id) {
         try {
-            AssetFixedType assetFixedType = assetFixedTypeService.getAssetFixedTypeById(id);
+            AssetFixedTypeDTO assetFixedType = assetFixedTypeService.getAssetFixedTypeById(id);
             return new ResponseEntity<>(assetFixedType, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to retrieve asset fixed type: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -48,7 +49,7 @@ public class AssetFixedTypeController {
     @GetMapping
     public ResponseEntity<?> getAllAssetFixedTypes() {
         try {
-            List<AssetFixedType> assetFixedTypes = assetFixedTypeService.getAllAssetFixedTypes();
+            List<AssetFixedTypeDTO> assetFixedTypes = assetFixedTypeService.getAllAssetFixedTypes();
             return new ResponseEntity<>(assetFixedTypes, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to retrieve asset fixed types: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -56,13 +57,13 @@ public class AssetFixedTypeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAssetFixedType(@PathVariable Integer id, @Valid @RequestBody AssetFixedType assetFixedType) {
-        List<String> errors = assetFixedTypeService.validateAssetFixedType(assetFixedType);
+    public ResponseEntity<?> updateAssetFixedType(@PathVariable Integer id, @Valid @RequestBody AssetFixedTypeDTO assetFixedTypeDTO) {
+        List<String> errors = assetFixedTypeService.validateAssetFixedType(assetFixedTypeDTO);
         if (!errors.isEmpty()) {
             return new ResponseEntity<>("Validation failed: " + String.join(", ", errors), HttpStatus.BAD_REQUEST);
         }
         try {
-            AssetFixedType updatedAssetFixedType = assetFixedTypeService.updateAssetFixedType(id, assetFixedType);
+            AssetFixedTypeDTO updatedAssetFixedType = assetFixedTypeService.updateAssetFixedType(id, assetFixedTypeDTO);
             return new ResponseEntity<>(updatedAssetFixedType, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to update asset fixed type: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

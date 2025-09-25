@@ -1,11 +1,11 @@
 package com.example.demo.AssetFixedType.service;
 
 import com.example.demo.AssetFixedType.dao.AssetFixedTypeDAO;
-import com.example.demo.AssetFixedType.dao.AssetFixedTypeDAOImpl;
-import com.example.demo.AssetFixedType.model.AssetFixedType;
+import com.example.demo.AssetFixedType.dto.AssetFixedTypeDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 public class AssetFixedTypeServiceImpl implements AssetFixedTypeService {
     private final AssetFixedTypeDAO assetFixedTypeDAO;
@@ -15,28 +15,28 @@ public class AssetFixedTypeServiceImpl implements AssetFixedTypeService {
     }
 
     @Override
-    public List<String> validateAssetFixedType(AssetFixedType assetFixedType) {
-        return assetFixedTypeDAO.validateAssetFixedType(assetFixedType);
+    public List<String> validateAssetFixedType(AssetFixedTypeDTO assetFixedTypeDTO) {
+        return assetFixedTypeDAO.validateAssetFixedType(assetFixedTypeDTO);
     }
 
     @Override
-    public AssetFixedType createAssetFixedType(AssetFixedType assetFixedType) {
-        return assetFixedTypeDAO.createAssetFixedType(assetFixedType);
+    public AssetFixedTypeDTO createAssetFixedType(AssetFixedTypeDTO assetFixedTypeDTO) {
+        return assetFixedTypeDAO.createAssetFixedType(assetFixedTypeDTO);
     }
 
     @Override
-    public AssetFixedType getAssetFixedTypeById(Integer id) {
+    public AssetFixedTypeDTO getAssetFixedTypeById(Integer id) {
         return assetFixedTypeDAO.getAssetFixedTypeById(id);
     }
 
     @Override
-    public List<AssetFixedType> getAllAssetFixedTypes() {
+    public List<AssetFixedTypeDTO> getAllAssetFixedTypes() {
         return assetFixedTypeDAO.getAllAssetFixedTypes();
     }
 
     @Override
-    public AssetFixedType updateAssetFixedType(Integer id, AssetFixedType assetFixedType) {
-        return assetFixedTypeDAO.updateAssetFixedType(id, assetFixedType);
+    public AssetFixedTypeDTO updateAssetFixedType(Integer id, AssetFixedTypeDTO assetFixedTypeDTO) {
+        return assetFixedTypeDAO.updateAssetFixedType(id, assetFixedTypeDTO);
     }
 
     @Override

@@ -1,14 +1,17 @@
 package com.example.demo.AssetFixedDecrease.service;
 
+import com.example.demo.AssetFixedDecrease.dto.AssetFixedDecreaseDTO;
 import com.example.demo.AssetFixedDecrease.model.AssetFixedDecrease;
 
 import java.util.List;
 
 public interface AssetFixedDecreaseService {
-    List<String> validateAssetFixedDecrease(AssetFixedDecrease assetFixedDecrease);
-    AssetFixedDecrease createAssetFixedDecrease(AssetFixedDecrease assetFixedDecrease);
-    AssetFixedDecrease getAssetFixedDecreaseById(Integer id);
-    List<AssetFixedDecrease> getAllAssetFixedDecreases();
-    AssetFixedDecrease updateAssetFixedDecrease(Integer id, AssetFixedDecrease assetFixedDecrease);
+    List<String> validateAssetFixedDecrease(AssetFixedDecreaseDTO assetFixedDecreaseDTO);
+    AssetFixedDecreaseDTO createAssetFixedDecrease(AssetFixedDecreaseDTO assetFixedDecreaseDTO);
+    AssetFixedDecreaseDTO getAssetFixedDecreaseById(Integer id);
+    List<AssetFixedDecreaseDTO> getAllAssetFixedDecreases();
+    AssetFixedDecreaseDTO updateAssetFixedDecrease(Integer id, AssetFixedDecreaseDTO assetFixedDecreaseDTO);
     void deleteAssetFixedDecrease(Integer id);
+    List<AssetFixedDecreaseDTO> getPaginatedAssetFixedDecreases(int page, int size);
+    long countAssetFixedDecreases();
 }

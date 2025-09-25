@@ -1,14 +1,13 @@
 package com.example.demo.AssetFixedType.dao;
 
-import com.example.demo.AssetFixedType.model.AssetFixedType;
-
+import com.example.demo.AssetFixedType.dto.AssetFixedTypeDTO;
 import java.util.List;
 
 public interface AssetFixedTypeDAO {
-    List<String> validateAssetFixedType(AssetFixedType assetFixedType);
-    AssetFixedType createAssetFixedType(AssetFixedType assetFixedType);
-    AssetFixedType getAssetFixedTypeById(Integer id);
-    List<AssetFixedType> getAllAssetFixedTypes();
-    AssetFixedType updateAssetFixedType(Integer id, AssetFixedType assetFixedType);
+    List<String> validateAssetFixedType(AssetFixedTypeDTO assetFixedTypeDTO);
+    AssetFixedTypeDTO createAssetFixedType(AssetFixedTypeDTO assetFixedTypeDTO);
+    AssetFixedTypeDTO getAssetFixedTypeById(Integer id);
+    List<AssetFixedTypeDTO> getAllAssetFixedTypes();
+    AssetFixedTypeDTO updateAssetFixedType(Integer id, AssetFixedTypeDTO assetFixedTypeDTO);
     void deleteAssetFixedType(Integer id);
 }

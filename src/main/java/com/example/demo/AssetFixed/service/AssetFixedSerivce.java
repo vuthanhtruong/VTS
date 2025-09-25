@@ -1,14 +1,15 @@
 package com.example.demo.AssetFixed.service;
 
+import com.example.demo.AssetFixed.dto.AssetFixedDTO;
 import com.example.demo.AssetFixed.model.AssetFixed;
 
 import java.util.List;
 
 public interface AssetFixedSerivce {
-    AssetFixed createAssetFixed(AssetFixed assetFixed);
-    AssetFixed getAssetFixedById(Integer id);
-    List<AssetFixed> getAllAssetFixed();
-    AssetFixed updateAssetFixed(Integer id, AssetFixed assetFixed);
+    AssetFixedDTO createAssetFixed(AssetFixedDTO assetFixedDTO);
+    AssetFixedDTO getAssetFixedById(Integer id);
+    List<AssetFixedDTO> getAllAssetFixed();
+    AssetFixedDTO updateAssetFixed(Integer id, AssetFixedDTO assetFixedDTO);
     void deleteAssetFixed(Integer id);
-    List<String> validateAssetFixed(AssetFixed assetFixed);
+    List<String> validateAssetFixed(AssetFixedDTO assetFixedDTO);
 }

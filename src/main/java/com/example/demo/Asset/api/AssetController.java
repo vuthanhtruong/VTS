@@ -1,6 +1,6 @@
 package com.example.demo.Asset.api;
 
-import com.example.demo.Asset.model.Asset;
+import com.example.demo.Asset.dto.AssetDTO;
 import com.example.demo.Asset.service.AssetService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/assets")
+@CrossOrigin(origins = "http://localhost:4200")
 @Validated
 public class AssetController {
 
@@ -22,13 +23,13 @@ public class AssetController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createAsset(@Valid @RequestBody Asset asset) {
-        List<String> errors = assetService.validateAsset(asset);
+    public ResponseEntity<?> createAsset(@Valid @RequestBody AssetDTO assetDTO) {
+        List<String> errors = assetService.validateAsset(assetDTO);
         if (!errors.isEmpty()) {
             return new ResponseEntity<>("Validation failed: " + String.join(", ", errors), HttpStatus.BAD_REQUEST);
         }
         try {
-            Asset createdAsset = assetService.createAsset(asset);
+            AssetDTO createdAsset = assetService.createAsset(assetDTO);
             return new ResponseEntity<>(createdAsset, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to create asset: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -38,7 +39,7 @@ public class AssetController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getAssetById(@PathVariable Integer id) {
         try {
-            Asset asset = assetService.getAssetById(id);
+            AssetDTO asset = assetService.getAssetById(id);
             return new ResponseEntity<>(asset, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to retrieve asset: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -48,7 +49,7 @@ public class AssetController {
     @GetMapping
     public ResponseEntity<?> getAllAssets() {
         try {
-            List<Asset> assets = assetService.getAllAssets();
+            List<AssetDTO> assets = assetService.getAllAssets();
             return new ResponseEntity<>(assets, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to retrieve assets: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -56,13 +57,13 @@ public class AssetController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAsset(@PathVariable Integer id, @Valid @RequestBody Asset asset) {
-        List<String> errors = assetService.validateAsset(asset);
+    public ResponseEntity<?> updateAsset(@PathVariable Integer id, @Valid @RequestBody AssetDTO assetDTO) {
+        List<String> errors = assetService.validateAsset(assetDTO);
         if (!errors.isEmpty()) {
             return new ResponseEntity<>("Validation failed: " + String.join(", ", errors), HttpStatus.BAD_REQUEST);
         }
         try {
-            Asset updatedAsset = assetService.updateAsset(id, asset);
+            AssetDTO updatedAsset = assetService.updateAsset(id, assetDTO);
             return new ResponseEntity<>(updatedAsset, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to update asset: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
