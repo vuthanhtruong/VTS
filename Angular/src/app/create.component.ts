@@ -1,23 +1,22 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import {HttpClient, HttpClientModule} from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'app-create',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, NgOptimizedImage],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.css']
 })
 export class CreateComponent implements OnInit {
   formData: any = {
     code: '',
-    name: '',
+    name: 'ssss',  // Set from asset
     voucherNo: '',
-    voucherDate: new Date().toISOString().split('T')[0], // Default to 2025-09-25
+    voucherDate: new Date().toISOString().split('T')[0],
     voucherUserId: null,
     assetFixedTypeId: null,
     assetFixedId: null,
@@ -27,10 +26,10 @@ export class CreateComponent implements OnInit {
     invoiceDate: '',
     decisionNo: '',
     decisionDate: '',
-    decRev: null,
-    depAccPaid: null,
-    depAccUnpaid: null,
-    assetProcCost: null,
+    decRev: null,         // Thu từ ghi giảm
+    depAccPaid: null,     // Đã nộp TK TG
+    depAccUnpaid: null,   // Chưa nộp TK TG
+    assetProcCost: null,  // Chi phí xử lý TS
     isActive: true,
     description: '',
     createById: null,
@@ -43,6 +42,7 @@ export class CreateComponent implements OnInit {
   isLoadingAssets = true;
   isLoadingReasons = true;
   isLoadingEmployees = true;
+  isSubmitting = false;
 
   private apiUrl = 'http://localhost:8080/api/asset-fixed-decreases';
   private assetApiUrl = 'http://localhost:8080/api/asset-fixed';
@@ -89,40 +89,72 @@ export class CreateComponent implements OnInit {
     });
   }
 
+  onAssetChange() {
+    const selectedAsset = this.assets.find(a => a.assetFixedId === this.formData.assetFixedId);
+    if (selectedAsset) {
+      this.formData.name = selectedAsset.name || '';  // Set name từ asset
+      this.formData.assetFixedTypeId = selectedAsset.assetFixedTypeId || null;
+    } else {
+      this.formData.name = '';  // Reset nếu không chọn
+    }
+  }
+
   onSubmit() {
+    // Basic form validation (có thể mở rộng với ReactiveForms)
+    if (!this.formData.code || !this.formData.assetFixedId || !this.formData.voucherUserId || !this.formData.assetFixedDecreaseReasonId || !this.formData.type) {
+      alert('Vui lòng điền đầy đủ các trường bắt buộc (*)!');
+      this.isSubmitting = false;
+      return;
+    }
+
+    this.isSubmitting = true;
     let description = this.formData.description || '';
-    if (this.formData.decisionNo) {
-      description += ` Số QĐ: ${this.formData.decisionNo}`;
-    }
-    if (this.formData.decisionDate) {
-      description += ` Ngày QĐ: ${this.formData.decisionDate}`;
-    }
     this.formData.description = description.trim();
 
-    if (this.formData.voucherDate) {
-      this.formData.voucherDate = new Date(this.formData.voucherDate).toISOString();
-    }
-    if (this.formData.invoiceDate) {
-      this.formData.invoiceDate = new Date(this.formData.invoiceDate).toISOString();
-    }
+    // Convert dates to ISO
+    const dateFields = ['voucherDate', 'invoiceDate', 'decisionDate'];
+    dateFields.forEach(field => {
+      if (this.formData[field]) {
+        this.formData[field] = new Date(this.formData[field]).toISOString();
+      } else {
+        this.formData[field] = null;  // Set null nếu rỗng
+      }
+    });
+
+    // Handle numeric fields (set to null if empty string, convert to Number for decimal support)
+    const numericFields = ['decRev', 'depAccPaid', 'depAccUnpaid', 'assetProcCost'];
+    numericFields.forEach(field => {
+      const value = this.formData[field];
+      if (value === '' || value == null || value === undefined) {
+        this.formData[field] = null;
+      } else {
+        this.formData[field] = Number(value);  // Hỗ trợ decimal từ step="0.01"
+      }
+    });
+
+    // Map voucherNo from code if not provided
+    this.formData.voucherNo = this.formData.voucherNo || this.formData.code;
 
     this.formData.createById = this.formData.voucherUserId;
     this.formData.modifiedById = this.formData.voucherUserId;
 
     const payload = { ...this.formData };
-    delete payload.decisionNo;
-    delete payload.decisionDate;
-    console.log('Submitting payload:', payload);
+    console.log('Submitting payload:', payload);  // Kiểm tra các trường số ở đây
 
     this.http.post(this.apiUrl, payload).subscribe({
-      next: () => {
+      next: (response) => {
+        console.log('Success response:', response);  // Log để check
         alert('Thêm mới thành công!');
         this.router.navigate(['/list']);
       },
       error: (err) => {
         console.error('Lỗi khi lưu:', err);
-        const errorMessage = err.error ? (typeof err.error === 'string' ? err.error : JSON.stringify(err.error)) : err.message;
+        const errorMessage = err.error?.errors ? err.error.errors.join(', ') : (err.error?.error || err.message);
         alert('Có lỗi xảy ra: ' + errorMessage);
+        this.isSubmitting = false;
+      },
+      complete: () => {
+        this.isSubmitting = false;  // Reset loading
       }
     });
   }

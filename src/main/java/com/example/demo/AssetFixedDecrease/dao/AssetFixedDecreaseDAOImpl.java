@@ -11,8 +11,10 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,20 +89,57 @@ public class AssetFixedDecreaseDAOImpl implements AssetFixedDecreaseDAO {
         if (assetFixedDecreaseDTO.getDescription() != null && assetFixedDecreaseDTO.getDescription().length() > 255) {
             errors.add("Description must not exceed 255 characters.");
         }
+
+        // Additional validation for numeric fields to ensure non-negative
+        if (assetFixedDecreaseDTO.getDecRev() != null && assetFixedDecreaseDTO.getDecRev() < 0) {
+            errors.add("Revenue from decrease must be non-negative.");
+        }
+        if (assetFixedDecreaseDTO.getDepAccUnpaid() != null && assetFixedDecreaseDTO.getDepAccUnpaid() < 0) {
+            errors.add("Unpaid deposit account must be non-negative.");
+        }
+        if (assetFixedDecreaseDTO.getDepAccPaid() != null && assetFixedDecreaseDTO.getDepAccPaid() < 0) {
+            errors.add("Paid deposit account must be non-negative.");
+        }
+        if (assetFixedDecreaseDTO.getAssetProcCost() != null && assetFixedDecreaseDTO.getAssetProcCost() < 0) {
+            errors.add("Asset processing cost must be non-negative.");
+        }
+
         return errors;
     }
 
     @Override
     public AssetFixedDecreaseDTO createAssetFixedDecrease(AssetFixedDecreaseDTO assetFixedDecreaseDTO) {
         try {
+            // Validate trước khi tạo
+            List<String> validationErrors = validateAssetFixedDecrease(assetFixedDecreaseDTO);
+            if (!validationErrors.isEmpty()) {
+                throw new IllegalArgumentException("Validation failed: " + String.join(", ", validationErrors));
+            }
+
+            // Chuyển đổi DTO sang Entity
             AssetFixedDecrease assetFixedDecrease = assetFixedDecreaseDTO.toEntity();
+
+            // Ánh xạ assetFixed
             if (assetFixedDecreaseDTO.getAssetFixedId() != null) {
                 AssetFixed assetFixed = entityManager.find(AssetFixed.class, assetFixedDecreaseDTO.getAssetFixedId());
                 if (assetFixed == null) {
                     throw new EntityNotFoundException("Asset fixed not found with ID: " + assetFixedDecreaseDTO.getAssetFixedId());
                 }
                 assetFixedDecrease.setAssetFixed(assetFixed);
+            } else {
+                throw new EntityNotFoundException("Asset fixed ID is required.");
             }
+
+            // Ánh xạ assetFixedType (nếu có)
+            if (assetFixedDecreaseDTO.getAssetFixedTypeId() != null) {
+                AssetFixed assetFixedType = entityManager.find(AssetFixed.class, assetFixedDecreaseDTO.getAssetFixedTypeId());
+                if (assetFixedType == null) {
+                    throw new EntityNotFoundException("Asset fixed type not found with ID: " + assetFixedDecreaseDTO.getAssetFixedTypeId());
+                }
+                assetFixedDecrease.setAssetFixedType(assetFixedType);
+            }
+
+            // Ánh xạ assetFixedDecreaseReason (bắt buộc)
             if (assetFixedDecreaseDTO.getAssetFixedDecreaseReasonId() == null) {
                 throw new EntityNotFoundException("Asset fixed decrease reason is required.");
             }
@@ -109,6 +148,8 @@ public class AssetFixedDecreaseDAOImpl implements AssetFixedDecreaseDAO {
                 throw new EntityNotFoundException("Asset fixed decrease reason not found with ID: " + assetFixedDecreaseDTO.getAssetFixedDecreaseReasonId());
             }
             assetFixedDecrease.setAssetFixedDecreaseReason(reason);
+
+            // Ánh xạ createBy và modifiedBy (bắt buộc nếu có ID)
             if (assetFixedDecreaseDTO.getCreateById() != null) {
                 Employee createBy = entityManager.find(Employee.class, assetFixedDecreaseDTO.getCreateById());
                 if (createBy == null) {
@@ -116,7 +157,11 @@ public class AssetFixedDecreaseDAOImpl implements AssetFixedDecreaseDAO {
                 }
                 assetFixedDecrease.setCreateBy(createBy);
                 assetFixedDecrease.setModifiedBy(createBy);
+            } else {
+                throw new EntityNotFoundException("CreateBy ID is required.");
             }
+
+            // Ánh xạ voucherUser
             if (assetFixedDecreaseDTO.getVoucherUserId() != null) {
                 Employee voucherUser = entityManager.find(Employee.class, assetFixedDecreaseDTO.getVoucherUserId());
                 if (voucherUser == null) {
@@ -124,11 +169,32 @@ public class AssetFixedDecreaseDAOImpl implements AssetFixedDecreaseDAO {
                 }
                 assetFixedDecrease.setVoucherUser(voucherUser);
             }
+
+            // Ánh xạ các trường số (decRev, depAccUnpaid, depAccPaid, assetProcCost)
+            assetFixedDecrease.setDecRev(assetFixedDecreaseDTO.getDecRev());
+            assetFixedDecrease.setDepAccUnpaid(assetFixedDecreaseDTO.getDepAccUnpaid());
+            assetFixedDecrease.setDepAccPaid(assetFixedDecreaseDTO.getDepAccPaid());
+            assetFixedDecrease.setAssetProcCost(assetFixedDecreaseDTO.getAssetProcCost());
+
+            // Đảm bảo createDate và modifiedDate không bị ghi đè từ DTO
+            assetFixedDecrease.setCreateDate(null); // Sẽ được set bởi @PrePersist
+            assetFixedDecrease.setModifiedDate(null); // Sẽ được set bởi @PreUpdate
+
+            // Lưu và flush để đảm bảo dữ liệu được commit
             entityManager.persist(assetFixedDecrease);
+            entityManager.flush();
+
+            // Trả về DTO
             return AssetFixedDecreaseDTO.fromEntity(assetFixedDecrease);
+        } catch (IllegalArgumentException e) {
+            logger.error("Validation failed for asset fixed decrease with code {}: {}", assetFixedDecreaseDTO.getCode(), e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        } catch (EntityNotFoundException e) {
+            logger.error("Entity not found for asset fixed decrease with code {}: {}", assetFixedDecreaseDTO.getCode(), e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         } catch (Exception e) {
             logger.error("Failed to create asset fixed decrease with code {}: {}", assetFixedDecreaseDTO.getCode(), e.getMessage());
-            throw e;
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to create asset fixed decrease", e);
         }
     }
 

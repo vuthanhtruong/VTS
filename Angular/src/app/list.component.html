@@ -78,7 +78,7 @@
           <img src="https://c.animaapp.com/mfm15dyimNLwos/img/solar-printer-outline.svg" alt="Print" />
           In
         </button>
-        <button class="btn btn-outline">
+        <button class="btn btn-outline" (click)="deleteSelected()">
           <img src="https://c.animaapp.com/mfm15dyimNLwos/img/icon-interface-outline-trash.svg" alt="Delete" />
           Xóa
         </button>
@@ -86,7 +86,11 @@
           <img src="https://c.animaapp.com/mfm15dyimNLwos/img/icon-interface-outline-plus.svg" alt="Add" />
           Thêm mới
         </button>
+        <button class="btn btn-outline" (click)="debugState()">Debug State</button>
       </div>
+
+      <!-- Success Message -->
+      <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
 
       <!-- Loading and Error States -->
       <div *ngIf="loading" class="loading">Đang tải dữ liệu...</div>
@@ -98,6 +102,7 @@
         <table>
           <thead>
           <tr>
+            <th><input type="checkbox" (change)="toggleSelectAll($event)"></th>
             <th>STT</th>
             <th>MÃ CT</th>
             <th>NGÀY CT</th>
@@ -108,6 +113,7 @@
           </thead>
           <tbody>
           <tr class="filter-row">
+            <td></td>
             <td><input type="text" placeholder="Năm" class="filter-input"></td>
             <td><input type="text" placeholder="Mã CT" class="filter-input"></td>
             <td><input type="text" placeholder="Ngày CT" class="filter-input"></td>
@@ -116,11 +122,12 @@
             <td><button class="clear-filter">Xóa bộ lọc</button></td>
           </tr>
           <tr *ngFor="let item of assetFixedDecreases; let i = index">
+            <td><input type="checkbox" [(ngModel)]="item.selected" (change)="updateSelectedItems()"></td>
             <td>{{ i + 1 + (currentPage * pageSize) }}</td>
-            <td>{{ item.code }}</td>
-            <td>{{ item.voucherDate | date:'dd/MM/yyyy' }}</td>
-            <td>{{ item.assetFixed?.code || 'N/A' }}</td>
-            <td>{{ item.name }}</td>
+            <td>{{ item.code || '-' }}</td>
+            <td>{{ item.voucherDate || '-' }}</td>
+            <td>{{ item.assetFixedCode || 'N/A' }}</td>
+            <td>{{ item.name || '-' }}</td>
             <td>
               <div class="action-icons">
                 <button class="icon-btn" [routerLink]="['/edit', item.assetFixedDecreaseId]">

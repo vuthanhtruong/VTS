@@ -1,3 +1,4 @@
+/* Layout */
 .form-page {
   position: relative;
   width: 100vw;
@@ -51,46 +52,27 @@
 
 .menu-item.active {
   background-color: #b9000e;
-  color: white;
-}
-
-.menu-item.expandable {
-  background-color: #b9000e1a;
-}
-
-.menu-icon {
-  width: 18px;
-  height: 18px;
+  color: #fff;
 }
 
 .menu-text {
   flex: 1;
   font-family: "Inter", Helvetica;
-  font-weight: 500;
   font-size: 14px;
-  line-height: 20px;
+  font-weight: 500;
   color: #111827;
 }
 
 .menu-item.active .menu-text {
-  color: white;
-}
-
-.expand-icon {
-  width: 18px;
-  height: 18px;
+  color: #fff;
 }
 
 .submenu-item {
-  display: flex;
-  height: 46px;
-  align-items: center;
   padding: 12px 10px 12px 50px;
   margin: 0 10px;
   font-family: "Inter", Helvetica;
-  font-weight: 500;
   font-size: 14px;
-  line-height: 20px;
+  font-weight: 500;
   color: #111827;
   cursor: pointer;
   border-radius: 8px;
@@ -103,20 +85,20 @@
 
 .main-content {
   position: absolute;
-  width: calc(100vw - 266px);
-  height: calc(100vh - 60px);
   top: 60px;
   left: 266px;
-  background-color: #ffffff;
+  width: calc(100vw - 266px);
+  height: calc(100vh - 60px);
+  background-color: #fff;
   overflow-y: auto;
 }
 
+/* Breadcrumb */
 .breadcrumb {
   display: flex;
   flex-direction: column;
   padding: 10px;
   gap: 10px;
-  background-color: #ffffff;
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -126,30 +108,24 @@
   gap: 6px;
 }
 
-.breadcrumb-home {
-  width: 16px;
-  height: 16px;
-  background-image: url(https://c.animaapp.com/mfm15dyimNLwos/img/home-2.svg);
-  background-size: 100% 100%;
-}
-
-.breadcrumb-arrow {
-  width: 16px;
-  height: 16px;
-}
-
 .breadcrumb-link {
   font-family: "Inter", Helvetica;
-  font-weight: 400;
   font-size: 14px;
-  line-height: 20px;
   color: #111827;
 }
 
 .page-title {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+}
+
+.page-title h1 {
+  font-family: "Inter", Helvetica;
+  font-weight: 600;
+  font-size: 18px;
+  margin: 0;
+  color: #111827;
 }
 
 .back-arrow {
@@ -158,26 +134,33 @@
   cursor: pointer;
   transition: opacity 0.2s;
 }
-
 .back-arrow:hover {
   opacity: 0.7;
 }
 
-.page-title h1 {
-  font-family: "Inter", Helvetica;
-  font-weight: 600;
-  font-size: 18px;
-  line-height: 24px;
-  color: #111827;
-  margin: 0;
+/* Messages */
+.error {
+  color: #991b1b;
+  background: #fee2e2;
+  border: 1px solid #ef4444;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 6px;
 }
 
+.loading {
+  font-family: "Inter", Helvetica;
+  font-size: 14px;
+  color: #6b7280;
+  padding: 10px;
+}
+
+/* Form */
 .form-content {
-  padding: 15px 10px 0;
+  padding: 15px 10px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  background-color: #ffffff;
+  gap: 20px;
 }
 
 .form-section {
@@ -190,13 +173,13 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 0;
+  padding-bottom: 8px;
 }
 
 .section-header h2 {
   font-family: "Inter", Helvetica;
-  font-weight: 500;
   font-size: 16px;
+  font-weight: 500;
   color: #111827;
   margin: 0;
 }
@@ -233,31 +216,32 @@
   font-family: "Inter", Helvetica;
   font-weight: 500;
   font-size: 14px;
-  line-height: 20px;
   color: #111827;
 }
 
-/* Input & Select đồng bộ */
+/* Inputs & Selects */
 .form-group input,
-.form-group select {
+.form-group select,
+.textarea-container textarea {
   padding: 8px 12px;
   border: 1px solid #c8cdd4;
   border-radius: 8px;
-  background-color: #ffffff;
   font-family: "Inter", Helvetica;
   font-size: 14px;
-  line-height: 20px;
   color: #111827;
+  background-color: #fff;
   transition: border-color 0.2s;
 }
 
 .form-group input:focus,
-.form-group select:focus {
+.form-group select:focus,
+.textarea-container textarea:focus {
   outline: none;
   border-color: #b9000e;
 }
 
-.form-group input::placeholder {
+.form-group input::placeholder,
+.textarea-container textarea::placeholder {
   color: #6b7280;
   opacity: 0.7;
 }
@@ -266,12 +250,7 @@
   appearance: none;
 }
 
-.form-group select:disabled {
-  background-color: #f9fafb;
-  color: #9ca3af;
-  cursor: not-allowed;
-}
-
+/* Input with icon */
 .input-with-icon {
   position: relative;
   display: flex;
@@ -281,7 +260,7 @@
 .input-with-icon input,
 .input-with-icon select {
   flex: 1;
-  padding-right: 40px;
+  padding-right: 36px;
 }
 
 .input-with-icon img {
@@ -292,6 +271,7 @@
   pointer-events: none;
 }
 
+/* Textarea */
 .textarea-container {
   position: relative;
 }
@@ -299,52 +279,32 @@
 .textarea-container textarea {
   width: 100%;
   height: 120px;
-  padding: 12px 14px;
-  border: 1px solid #c8cdd4;
-  border-radius: 8px;
-  background-color: #ffffff;
-  font-family: "Inter", Helvetica;
-  font-size: 14px;
-  line-height: 20px;
-  color: #111827;
   resize: vertical;
-  transition: border-color 0.2s;
-}
-
-.textarea-container textarea:focus {
-  outline: none;
-  border-color: #b9000e;
-}
-
-.textarea-container textarea::placeholder {
-  color: #6b7280;
-  opacity: 0.7;
 }
 
 .char-count {
   position: absolute;
-  bottom: 12px;
+  bottom: 10px;
   right: 14px;
-  font-family: "Inter", Helvetica;
-  font-size: 14px;
+  font-size: 12px;
   color: #6b7280;
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 0 4px;
 }
 
+/* Actions */
 .form-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 0;
+  padding-top: 20px;
   border-top: 1px solid rgba(17, 24, 39, 0.2);
-  margin-top: 20px;
 }
 
 .left-actions,
 .right-actions {
   display: flex;
-  gap: 5px;
+  gap: 10px;
 }
 
 .btn {
@@ -356,10 +316,9 @@
   font-family: "Inter", Helvetica;
   font-weight: 500;
   font-size: 14px;
-  line-height: 20px;
   cursor: pointer;
-  transition: all 0.2s;
   border: 1px solid;
+  transition: all 0.2s;
 }
 
 .btn img {
@@ -368,11 +327,10 @@
 }
 
 .btn-outline {
-  background-color: #ffffff;
+  background-color: #fff;
   border-color: #d1d5db;
   color: #111827;
 }
-
 .btn-outline:hover {
   background-color: #f3f4f6;
 }
@@ -380,31 +338,22 @@
 .btn-primary {
   background-color: #b9000e;
   border-color: #b9000e;
-  color: white;
+  color: #fff;
 }
-
 .btn-primary:hover {
   background-color: #a0000c;
 }
 
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 768px) {
   .form-row {
     flex-direction: column;
   }
-
   .form-group.half-width {
     flex: 1 1 100%;
   }
-
   .form-actions {
     flex-direction: column;
     gap: 10px;
-  }
-
-  .left-actions,
-  .right-actions {
-    width: 100%;
-    justify-content: center;
   }
 }

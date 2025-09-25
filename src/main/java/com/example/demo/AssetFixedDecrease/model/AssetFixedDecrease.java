@@ -62,16 +62,16 @@ public class AssetFixedDecrease {
     private AssetFixedDecreaseReason assetFixedDecreaseReason;
 
     @Column(name = "DEC_REV")
-    private Integer decRev;
+    private Double decRev;
 
     @Column(name = "DEP_ACC_UNPAID")
-    private Integer depAccUnpaid;
+    private Double depAccUnpaid;
 
     @Column(name = "DEP_ACC_PAID")
-    private Integer depAccPaid;
+    private Double depAccPaid;
 
     @Column(name = "ASSET_PROC_COST")
-    private Integer assetProcCost;
+    private Double assetProcCost;
 
     @Column(name = "IS_ACTIVE", nullable = false)
     private Boolean isActive;
@@ -100,8 +100,8 @@ public class AssetFixedDecrease {
     public AssetFixedDecrease(Integer assetFixedDecreaseId, String code, String name, AssetFixed assetFixedType,
                               AssetFixed assetFixed, String voucherNo, LocalDateTime voucherDate, Employee voucherUser,
                               Integer type, String invoiceNo, LocalDateTime invoiceDate,
-                              AssetFixedDecreaseReason assetFixedDecreaseReason, Integer decRev, Integer depAccUnpaid,
-                              Integer depAccPaid, Integer assetProcCost, Boolean isActive, Employee createBy,
+                              AssetFixedDecreaseReason assetFixedDecreaseReason, Double decRev, Double depAccUnpaid,
+                              Double depAccPaid, Double assetProcCost, Boolean isActive, Employee createBy,
                               LocalDateTime createDate, Employee modifiedBy, LocalDateTime modifiedDate, String description) {
         this.assetFixedDecreaseId = assetFixedDecreaseId;
         this.code = code;

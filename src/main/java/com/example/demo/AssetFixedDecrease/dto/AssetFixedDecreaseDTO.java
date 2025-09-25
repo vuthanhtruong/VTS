@@ -1,9 +1,6 @@
 package com.example.demo.AssetFixedDecrease.dto;
 
-import com.example.demo.AssetFixed.model.AssetFixed;
 import com.example.demo.AssetFixedDecrease.model.AssetFixedDecrease;
-import com.example.demo.AssetFixedDecreaseReason.model.AssetFixedDecreaseReason;
-import com.example.demo.Employee.model.Employee;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,10 +24,10 @@ public class AssetFixedDecreaseDTO {
     private String invoiceNo;
     private LocalDateTime invoiceDate;
     private Integer assetFixedDecreaseReasonId;
-    private Integer decRev;
-    private Integer depAccUnpaid;
-    private Integer depAccPaid;
-    private Integer assetProcCost;
+    private Double decRev;
+    private Double depAccUnpaid;
+    private Double depAccPaid;
+    private Double assetProcCost;
     private Boolean isActive;
     private Integer createById;
     private LocalDateTime createDate;
@@ -43,7 +40,7 @@ public class AssetFixedDecreaseDTO {
     public AssetFixedDecreaseDTO(Integer assetFixedDecreaseId, String code, String name, Integer assetFixedTypeId,
                                  Integer assetFixedId, String voucherNo, LocalDateTime voucherDate, Integer voucherUserId,
                                  Integer type, String invoiceNo, LocalDateTime invoiceDate, Integer assetFixedDecreaseReasonId,
-                                 Integer decRev, Integer depAccUnpaid, Integer depAccPaid, Integer assetProcCost,
+                                 Double decRev, Double depAccUnpaid, Double depAccPaid, Double assetProcCost,
                                  Boolean isActive, Integer createById, LocalDateTime createDate,
                                  Integer modifiedById, LocalDateTime modifiedDate, String description) {
         this.assetFixedDecreaseId = assetFixedDecreaseId;
